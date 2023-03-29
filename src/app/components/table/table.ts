@@ -727,6 +727,7 @@ export class Table implements OnInit, AfterViewInit, AfterContentInit, Blockable
     }
 
     ngOnChanges(simpleChange: SimpleChanges) {
+        const isRestoreProcess = !this.stateRestored;
         if (simpleChange.value) {
             if (this.isStateful() && !this.stateRestored) {
                 this.restoreState();
@@ -756,7 +757,7 @@ export class Table implements OnInit, AfterViewInit, AfterContentInit, Blockable
             }
         }
 
-        if (simpleChange.sortField) {
+        if (simpleChange.sortField && !isRestoreProcess) {
             this._sortField = simpleChange.sortField.currentValue;
 
             //avoid triggering lazy load prior to lazy initialization at onInit
@@ -776,7 +777,7 @@ export class Table implements OnInit, AfterViewInit, AfterContentInit, Blockable
             }
         }
 
-        if (simpleChange.sortOrder) {
+        if (simpleChange.sortOrder && !isRestoreProcess) {
             this._sortOrder = simpleChange.sortOrder.currentValue;
 
             //avoid triggering lazy load prior to lazy initialization at onInit
@@ -2316,6 +2317,9 @@ export class Table implements OnInit, AfterViewInit, AfterContentInit, Blockable
     }
 
     saveColumnWidths(state) {
+        if (!this.containerViewChild) {
+            return;
+        }
         let widths = [];
         let headers = DomHandler.find(this.containerViewChild.nativeElement, '.p-datatable-thead > tr > th');
         headers.forEach((header) => widths.push(DomHandler.getOuterWidth(header)));
